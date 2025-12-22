@@ -12,7 +12,10 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<InteractionMode>('conversar');
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
+  const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const addMenuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
@@ -30,8 +33,12 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setIsModeDropdownOpen(false);
+      }
+      if (addMenuRef.current && !addMenuRef.current.contains(target)) {
+        setIsAddMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -44,7 +51,36 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
         <div className="bg-white border border-[#e5e7eb] rounded-[1.8rem] p-4 flex flex-col gap-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#7b8a97] cursor-pointer hover:text-slate-900">add</span>
+            <div className="relative" ref={addMenuRef}>
+              <button 
+                onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
+                className="flex items-center justify-center p-1 text-[#7b8a97] hover:text-slate-900 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">add</span>
+              </button>
+
+              {/* Modal de Adicionar (Conforme Imagem) */}
+              {isAddMenuOpen && (
+                <div className="absolute bottom-full left-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                  <button 
+                    disabled
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-[#d1d5db] cursor-not-allowed rounded-xl text-left"
+                  >
+                    <span className="material-symbols-outlined text-[22px]">photo_camera</span>
+                    <span className="text-[15px]">Tirar uma captura de tela</span>
+                  </button>
+
+                  <button 
+                    onClick={() => setIsAddMenuOpen(false)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"
+                  >
+                    <span className="material-symbols-outlined text-[22px]">image</span>
+                    <span className="text-[15px]">Adicionar uma imagem</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             <input 
               ref={inputRef}
               className="w-full bg-transparent border-none text-[17px] text-[#2c3137] placeholder:text-[#9ca3af] px-2 py-1 focus:ring-0" 
@@ -55,6 +91,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               onKeyDown={handleKeyDown}
               disabled={disabled}
             />
+
             {input.trim() ? (
                <button 
                 onClick={handleSend}
@@ -65,7 +102,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               </button>
             ) : (
               <div className="flex items-center gap-3 text-[#7b8a97]">
-                <span className="material-symbols-outlined text-[24px] cursor-pointer hover:text-slate-900">camera_alt</span>
                 <span className="material-symbols-outlined text-[24px] cursor-pointer hover:text-slate-900">mic</span>
               </div>
             )}
