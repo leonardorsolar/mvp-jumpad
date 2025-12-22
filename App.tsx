@@ -1,5 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
+import TitleBar from './components/TitleBar';
 import Header from './components/Header';
 import ChatArea from './components/ChatArea';
 import InputBar from './components/InputBar';
@@ -69,6 +70,10 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen-ios bg-[#f9faf8]">
+      {/* Barra de Título conforme a imagem do usuário */}
+      <TitleBar />
+      
+      {/* Cabeçalho do Chat (Haiku 4.5) */}
       <Header onNewChat={handleNewChat} />
       
       <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
