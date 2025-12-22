@@ -12,7 +12,6 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
   const [step, setStep] = useState<WorkflowStep>(initialStep);
   const [workflowName, setWorkflowName] = useState('new-tab');
   
-  // Reseta o passo sempre que o fluxo é aberto ou o initialStep muda
   useEffect(() => {
     if (isOpen) {
       setStep(initialStep);
@@ -41,8 +40,8 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
 
   if (step === 'CREATE_MODAL') {
     return (
-      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-300">
-        <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 flex flex-col gap-6 animate-in zoom-in-95 duration-200 relative z-[1001]">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.3)] p-8 flex flex-col gap-6 animate-in zoom-in-95 duration-200 relative">
           <div className="flex items-center justify-between">
             <h2 className="text-[20px] font-bold text-[#1a1a1a]">Criar assistente de trabalho</h2>
             <button onClick={onClose} className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
@@ -110,8 +109,7 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
   }
 
   return (
-    <div className="fixed inset-0 z-[500] bg-[#fbfcf8] flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
-      {/* Header */}
+    <div className="fixed inset-0 z-[9000] bg-[#fbfcf8] flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2 text-slate-700">
           <span className="material-symbols-outlined text-[20px] text-blue-600">language</span>
@@ -122,9 +120,9 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-10 max-w-lg mx-auto w-full">
+      <div className="flex-1 flex flex-col items-center justify-center px-10 max-w-lg mx-auto w-full text-center">
         {step === 'RECORDING' ? (
-          <div className="w-full space-y-6 animate-in fade-in duration-500">
+          <div className="w-full space-y-6 animate-in fade-in duration-500 text-left">
             <div className="flex items-start gap-4 p-4 bg-white/40 rounded-2xl">
               <div className="size-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-[14px] shrink-0">1</div>
               <div className="flex flex-col gap-0.5">
@@ -154,8 +152,7 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
         )}
       </div>
 
-      {/* Footer Controls */}
-      <div className="p-6 pb-12 bg-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.04)] border-t border-slate-50 relative z-[501]">
+      <div className="p-6 pb-12 bg-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.04)] border-t border-slate-50 relative">
         {step === 'RECORDING' ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">

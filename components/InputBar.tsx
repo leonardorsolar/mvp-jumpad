@@ -1,12 +1,12 @@
 
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
-import VoiceModeOverlay from './VoiceModeOverlay';
-import WorkflowFlow from './WorkflowFlow';
 import { WorkflowStep } from '../types';
 
 interface InputBarProps {
   onSendMessage: (text: string) => void;
   disabled: boolean;
+  onOpenVoice: () => void;
+  onOpenWorkflow: (step: WorkflowStep) => void;
 }
 
 type InteractionMode = 'conversar' | 'executar';
@@ -24,14 +24,11 @@ const MOCK_ASSISTANTS: Assistant[] = [
   { id: '3', name: 'Assistente de Tradução', command: '/traducao', icon: 'translate' },
 ];
 
-const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
+const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoice, onOpenWorkflow }) => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<InteractionMode>('conversar');
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
-  const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
-  const [isWorkflowFlowOpen, setIsWorkflowFlowOpen] = useState(false);
-  const [workflowInitialStep, setWorkflowInitialStep] = useState<WorkflowStep>('PERMISSION');
   const [isWorkflowMenuOpen, setIsWorkflowMenuOpen] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   
@@ -74,15 +71,14 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
     inputRef.current?.focus();
   };
 
-  const openWorkflow = (step: WorkflowStep) => {
-    // FECHA TODOS OS MENUS ANTES DE ABRIR O FLUXO
+  const triggerWorkflow = (step: WorkflowStep) => {
+    // FECHA TODOS OS MENUS LOCAIS
     setIsWorkflowMenuOpen(false);
     setIsCommandMenuOpen(false);
     setIsAddMenuOpen(false);
     setIsModeDropdownOpen(false);
     
-    setWorkflowInitialStep(step);
-    setIsWorkflowFlowOpen(true);
+    onOpenWorkflow(step);
   };
 
   useEffect(() => {
@@ -263,7 +259,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
                 {isWorkflowMenuOpen && (
                   <div className="absolute bottom-full right-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-[55] animate-in fade-in slide-in-from-bottom-2 duration-200">
                     <button 
-                      onClick={() => openWorkflow('CREATE_MODAL')}
+                      onClick={() => triggerWorkflow('CREATE_MODAL')}
                       className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"
                     >
                       <span className="material-symbols-outlined text-[22px] text-slate-400">autorenew</span>
@@ -271,7 +267,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
                     </button>
 
                     <button 
-                      onClick={() => openWorkflow('PERMISSION')}
+                      onClick={() => triggerWorkflow('PERMISSION')}
                       className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"
                     >
                       <span className="material-symbols-outlined text-[22px] text-slate-400">add_task</span>
@@ -282,7 +278,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               </div>
 
               <button 
-                onClick={() => setIsVoiceModeOpen(true)}
+                onClick={onOpenVoice}
                 className="p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
                 title="Conversa por Voz"
               >
@@ -296,17 +292,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
           Jumpad é uma IA e pode cometer erros. Verifique as respostas.
         </p>
       </div>
-
-      <VoiceModeOverlay 
-        isOpen={isVoiceModeOpen} 
-        onClose={() => setIsVoiceModeOpen(false)} 
-      />
-
-      <WorkflowFlow
-        isOpen={isWorkflowFlowOpen}
-        onClose={() => setIsWorkflowFlowOpen(false)}
-        initialStep={workflowInitialStep}
-      />
     </footer>
   );
 };

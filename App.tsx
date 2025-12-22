@@ -1,12 +1,14 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import TitleBar from './components/TitleBar';
 import Header from './components/Header';
 import ChatArea from './components/ChatArea';
 import InputBar from './components/InputBar';
 import PeopleList from './components/PeopleList';
 import DirectChat from './components/DirectChat';
-import { ChatState, Message, Role, ViewState, Conversation } from './types';
+import VoiceModeOverlay from './components/VoiceModeOverlay';
+import WorkflowFlow from './components/WorkflowFlow';
+import { ChatState, Message, Role, ViewState, Conversation, WorkflowStep } from './types';
 import { streamMessageFromGemini } from './services/geminiService';
 
 const MOCK_DIRECT_MESSAGES: Message[] = [
@@ -21,6 +23,11 @@ const App: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState('Haiku 4.5');
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
   
+  // States para Overlays
+  const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
+  const [isWorkflowFlowOpen, setIsWorkflowFlowOpen] = useState(false);
+  const [workflowInitialStep, setWorkflowInitialStep] = useState<WorkflowStep>('PERMISSION');
+
   const [aiChatState, setAiChatState] = useState<ChatState>({
     messages: [],
     isTyping: false,
@@ -36,6 +43,11 @@ const App: React.FC = () => {
   const handleSelectConversation = (conv: Conversation) => {
     setActiveConversation(conv);
     setCurrentView('DIRECT_CHAT');
+  };
+
+  const handleOpenWorkflow = (step: WorkflowStep) => {
+    setWorkflowInitialStep(step);
+    setIsWorkflowFlowOpen(true);
   };
 
   const handleSendMessage = useCallback(async (text: string) => {
@@ -94,7 +106,7 @@ const App: React.FC = () => {
   }, [currentView]);
 
   return (
-    <div className="flex flex-col h-screen-ios bg-[#f9faf8]">
+    <div className="flex flex-col h-screen-ios bg-[#f9faf8] relative">
       <TitleBar />
       
       <Header 
@@ -136,9 +148,23 @@ const App: React.FC = () => {
           <InputBar 
             onSendMessage={handleSendMessage} 
             disabled={aiChatState.isTyping} 
+            onOpenVoice={() => setIsVoiceModeOpen(true)}
+            onOpenWorkflow={handleOpenWorkflow}
           />
         )}
       </div>
+
+      {/* Renderização dos Overlays no nível raiz */}
+      <VoiceModeOverlay 
+        isOpen={isVoiceModeOpen} 
+        onClose={() => setIsVoiceModeOpen(false)} 
+      />
+
+      <WorkflowFlow
+        isOpen={isWorkflowFlowOpen}
+        onClose={() => setIsWorkflowFlowOpen(false)}
+        initialStep={workflowInitialStep}
+      />
     </div>
   );
 };
