@@ -75,9 +75,14 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   };
 
   const openWorkflow = (step: WorkflowStep) => {
+    // FECHA TODOS OS MENUS ANTES DE ABRIR O FLUXO
+    setIsWorkflowMenuOpen(false);
+    setIsCommandMenuOpen(false);
+    setIsAddMenuOpen(false);
+    setIsModeDropdownOpen(false);
+    
     setWorkflowInitialStep(step);
     setIsWorkflowFlowOpen(true);
-    setIsWorkflowMenuOpen(false);
   };
 
   useEffect(() => {
@@ -145,7 +150,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               </button>
 
               {isAddMenuOpen && (
-                <div className="absolute bottom-full left-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <div className="absolute bottom-full left-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-[55] animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <button 
                     disabled
                     className="w-full flex items-center gap-3 px-3 py-2.5 text-[#d1d5db] cursor-not-allowed rounded-xl text-left"
@@ -209,7 +214,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               </button>
 
               {isModeDropdownOpen && (
-                <div className="absolute bottom-full left-0 mb-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                <div className="absolute bottom-full left-0 mb-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-1.5 z-[55] animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <button 
                     onClick={() => { setMode('conversar'); setIsModeDropdownOpen(false); }}
                     className="w-full flex items-start gap-3 px-3 py-3 hover:bg-slate-50 rounded-xl transition-colors text-left group"
@@ -256,7 +261,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
                 </button>
 
                 {isWorkflowMenuOpen && (
-                  <div className="absolute bottom-full right-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                  <div className="absolute bottom-full right-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-[55] animate-in fade-in slide-in-from-bottom-2 duration-200">
                     <button 
                       onClick={() => openWorkflow('CREATE_MODAL')}
                       className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"

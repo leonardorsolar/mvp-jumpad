@@ -12,7 +12,7 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
   const [step, setStep] = useState<WorkflowStep>(initialStep);
   const [workflowName, setWorkflowName] = useState('new-tab');
   
-  // Reseta o passo sempre que o fluxo é aberto
+  // Reseta o passo sempre que o fluxo é aberto ou o initialStep muda
   useEffect(() => {
     if (isOpen) {
       setStep(initialStep);
@@ -41,49 +41,49 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
 
   if (step === 'CREATE_MODAL') {
     return (
-      <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl p-6 flex flex-col gap-6 animate-in zoom-in-95 duration-200">
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 flex flex-col gap-6 animate-in zoom-in-95 duration-200 relative z-[1001]">
           <div className="flex items-center justify-between">
-            <h2 className="text-[19px] font-bold text-[#1a1a1a]">Criar assistente de trabalho</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+            <h2 className="text-[20px] font-bold text-[#1a1a1a]">Criar assistente de trabalho</h2>
+            <button onClick={onClose} className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[14px] font-medium text-slate-700 ml-1">Nome</label>
-              <div className="flex items-center gap-2 border border-slate-200 rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+              <label className="text-[14px] font-semibold text-slate-700 ml-1">Nome</label>
+              <div className="flex items-center gap-2 border border-slate-200 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-100 transition-all bg-slate-50/50">
                 <span className="text-slate-400 text-[16px] font-medium">/</span>
                 <input 
                   type="text" 
                   value={workflowName}
                   onChange={(e) => setWorkflowName(e.target.value)}
-                  className="flex-1 bg-transparent border-none p-0 focus:ring-0 text-[15px]" 
+                  className="flex-1 bg-transparent border-none p-0 focus:ring-0 text-[15px] font-medium" 
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[14px] font-medium text-slate-700 ml-1">Prompt</label>
+              <label className="text-[14px] font-semibold text-slate-700 ml-1">Prompt</label>
               <textarea 
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 min-h-[120px] focus:ring-2 focus:ring-blue-100 transition-all text-[15px] resize-none"
+                className="w-full border border-slate-200 rounded-2xl px-4 py-3 min-h-[120px] focus:ring-2 focus:ring-blue-100 transition-all text-[15px] resize-none bg-slate-50/50"
                 placeholder="Ex: Abrir uma nova aba do navegador e acessar o site da empresa..."
                 defaultValue="Open a new browser tab (navigate to the Chrome new tab page)."
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[14px] font-medium text-slate-700 ml-1">Começar de</label>
+              <label className="text-[14px] font-semibold text-slate-700 ml-1">Começar de</label>
               <input 
                 type="text" 
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-blue-100 transition-all text-[15px]" 
+                className="w-full border border-slate-200 rounded-2xl px-4 py-3 focus:ring-2 focus:ring-blue-100 transition-all text-[15px] bg-slate-50/50" 
                 placeholder="https://example.com"
               />
             </div>
 
-            <div className="flex items-center justify-between py-2">
-              <span className="text-[15px] text-slate-700 font-medium">Agendar</span>
+            <div className="flex items-center justify-between py-2 px-1">
+              <span className="text-[15px] text-slate-700 font-semibold">Agendar execução</span>
               <button className="w-12 h-6 bg-slate-200 rounded-full relative p-1 transition-colors">
                 <div className="size-4 bg-white rounded-full shadow-sm"></div>
               </button>
@@ -93,13 +93,13 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
           <div className="flex gap-3 mt-4">
             <button 
               onClick={onClose}
-              className="flex-1 py-3 border border-slate-200 rounded-xl font-semibold text-[15px] hover:bg-slate-50 transition-colors"
+              className="flex-1 py-4 border border-slate-200 rounded-2xl font-bold text-[15px] text-slate-600 hover:bg-slate-50 transition-colors"
             >
               Cancelar
             </button>
             <button 
               onClick={onClose}
-              className="flex-1 py-3 bg-[#1a1a1a] text-white rounded-xl font-semibold text-[15px] hover:opacity-90 transition-opacity"
+              className="flex-1 py-4 bg-[#1a1a1a] text-white rounded-2xl font-bold text-[15px] hover:opacity-90 transition-opacity shadow-lg shadow-black/10"
             >
               Criar assistente
             </button>
@@ -110,14 +110,14 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
   }
 
   return (
-    <div className="fixed inset-0 z-[250] bg-[#fbfcf8] flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-0 z-[500] bg-[#fbfcf8] flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2 text-slate-700">
           <span className="material-symbols-outlined text-[20px] text-blue-600">language</span>
           <span className="font-medium text-[16px]">New tab</span>
         </div>
-        <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+        <button onClick={onClose} className="size-10 flex items-center justify-center rounded-full hover:bg-black/5 text-slate-400 hover:text-slate-600 transition-colors">
           <span className="material-symbols-outlined">close</span>
         </button>
       </div>
@@ -143,8 +143,8 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
         ) : (
           <>
             {renderGraphic()}
-            <h1 className="text-[22px] font-bold text-slate-900 mb-4 tracking-tight">Ensine seu fluxo de trabalho ao Jumpad</h1>
-            <p className="text-[16px] text-slate-600 leading-snug">
+            <h1 className="text-[24px] font-bold text-slate-900 mb-4 tracking-tight">Ensine seu fluxo de trabalho ao Jumpad</h1>
+            <p className="text-[17px] text-slate-600 leading-snug">
               {step === 'PERMISSION' 
                 ? 'Ative seu microfone para narrar enquanto demonstra o fluxo de trabalho. Jumpad aprenderá o processo e o repetirá para você.'
                 : 'Passe pelas etapas como se estivesse ensinando um novo colega de equipe. O Jumpad aprenderá o processo e o repetirá para você.'
@@ -155,23 +155,23 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
       </div>
 
       {/* Footer Controls */}
-      <div className="p-6 pb-12 bg-white rounded-t-[2.5rem] shadow-[0_-8px_30px_rgba(0,0,0,0.03)] border-t border-slate-50">
+      <div className="p-6 pb-12 bg-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.04)] border-t border-slate-50 relative z-[501]">
         {step === 'RECORDING' ? (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <button className="flex-1 h-14 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
+              <button className="flex-1 h-16 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
                 <span className="material-symbols-outlined text-[24px]">delete</span>
               </button>
-              <button className="flex-1 h-14 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
+              <button className="flex-1 h-16 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
                 <span className="material-symbols-outlined text-[24px]">pause</span>
               </button>
-              <button className="flex-1 h-14 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
+              <button className="flex-1 h-16 border border-slate-200 rounded-2xl flex items-center justify-center text-slate-600 hover:bg-slate-50 transition-colors">
                 <span className="material-symbols-outlined text-[24px]">mic</span>
               </button>
             </div>
             <button 
               onClick={() => setStep('CREATE_MODAL')}
-              className="w-full h-14 bg-[#1a1a1a] text-white rounded-2xl font-bold text-[16px] hover:opacity-90 transition-opacity active:scale-[0.98]"
+              className="w-full h-16 bg-[#1a1a1a] text-white rounded-2xl font-bold text-[17px] hover:opacity-90 transition-opacity active:scale-[0.98] shadow-lg shadow-black/10"
             >
               Concluído
             </button>
@@ -179,7 +179,7 @@ const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialSte
         ) : (
           <button 
             onClick={() => step === 'PERMISSION' ? setStep('START') : setStep('RECORDING')}
-            className="w-full h-16 bg-[#1a1a1a] text-white rounded-2xl flex items-center justify-center gap-3 font-bold text-[17px] hover:opacity-95 transition-opacity active:scale-[0.98]"
+            className="w-full h-16 bg-[#1a1a1a] text-white rounded-2xl flex items-center justify-center gap-3 font-bold text-[17px] hover:opacity-95 transition-opacity active:scale-[0.98] shadow-lg shadow-black/10"
           >
             <span className="material-symbols-outlined">mic</span>
             {step === 'PERMISSION' ? 'Ativar microfone' : 'Iniciar gravação'}
