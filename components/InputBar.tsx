@@ -2,6 +2,7 @@
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import VoiceModeOverlay from './VoiceModeOverlay';
 import WorkflowFlow from './WorkflowFlow';
+import { WorkflowStep } from '../types';
 
 interface InputBarProps {
   onSendMessage: (text: string) => void;
@@ -30,11 +31,14 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
   const [isWorkflowFlowOpen, setIsWorkflowFlowOpen] = useState(false);
+  const [workflowInitialStep, setWorkflowInitialStep] = useState<WorkflowStep>('PERMISSION');
+  const [isWorkflowMenuOpen, setIsWorkflowMenuOpen] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const commandMenuRef = useRef<HTMLDivElement>(null);
+  const workflowMenuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
@@ -55,7 +59,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
     const val = e.target.value;
     setInput(val);
     
-    // Abre o menu de comandos se o usuário digitar '/' no início ou após um espaço
     if (val.endsWith('/')) {
       setIsCommandMenuOpen(true);
     } else if (!val.includes('/')) {
@@ -64,12 +67,17 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   };
 
   const selectAssistant = (assistant: Assistant) => {
-    // Substitui o último '/' digitado pelo comando do assistente
     const lastSlashIndex = input.lastIndexOf('/');
     const newInput = input.substring(0, lastSlashIndex) + assistant.command + ' ';
     setInput(newInput);
     setIsCommandMenuOpen(false);
     inputRef.current?.focus();
+  };
+
+  const openWorkflow = (step: WorkflowStep) => {
+    setWorkflowInitialStep(step);
+    setIsWorkflowFlowOpen(true);
+    setIsWorkflowMenuOpen(false);
   };
 
   useEffect(() => {
@@ -83,6 +91,9 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
       }
       if (commandMenuRef.current && !commandMenuRef.current.contains(target)) {
         setIsCommandMenuOpen(false);
+      }
+      if (workflowMenuRef.current && !workflowMenuRef.current.contains(target)) {
+        setIsWorkflowMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -231,15 +242,39 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
             </div>
             
             <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setIsWorkflowFlowOpen(true)}
-                className="group relative p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
-              >
-                <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Criar assistente de trabalho
-                </div>
-              </button>
+              <div className="relative" ref={workflowMenuRef}>
+                <button 
+                  onClick={() => setIsWorkflowMenuOpen(!isWorkflowMenuOpen)}
+                  className="group relative p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+                  {!isWorkflowMenuOpen && (
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                      Assistente de trabalho
+                    </div>
+                  )}
+                </button>
+
+                {isWorkflowMenuOpen && (
+                  <div className="absolute bottom-full right-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                    <button 
+                      onClick={() => openWorkflow('CREATE_MODAL')}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"
+                    >
+                      <span className="material-symbols-outlined text-[22px] text-slate-400">autorenew</span>
+                      <span className="text-[14px]">Converter em Assistente</span>
+                    </button>
+
+                    <button 
+                      onClick={() => openWorkflow('PERMISSION')}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left"
+                    >
+                      <span className="material-symbols-outlined text-[22px] text-slate-400">add_task</span>
+                      <span className="text-[14px]">Criar Assistente de trabalho</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               <button 
                 onClick={() => setIsVoiceModeOpen(true)}
@@ -265,6 +300,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
       <WorkflowFlow
         isOpen={isWorkflowFlowOpen}
         onClose={() => setIsWorkflowFlowOpen(false)}
+        initialStep={workflowInitialStep}
       />
     </footer>
   );

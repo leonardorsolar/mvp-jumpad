@@ -1,15 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { WorkflowStep } from '../types';
 
 interface WorkflowFlowProps {
   isOpen: boolean;
   onClose: () => void;
+  initialStep?: WorkflowStep;
 }
 
-const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose }) => {
-  const [step, setStep] = useState<'PERMISSION' | 'START' | 'RECORDING' | 'CREATE_MODAL'>('PERMISSION');
+const WorkflowFlow: React.FC<WorkflowFlowProps> = ({ isOpen, onClose, initialStep = 'PERMISSION' }) => {
+  const [step, setStep] = useState<WorkflowStep>(initialStep);
   const [workflowName, setWorkflowName] = useState('new-tab');
   
+  // Reseta o passo sempre que o fluxo é aberto
+  useEffect(() => {
+    if (isOpen) {
+      setStep(initialStep);
+    }
+  }, [isOpen, initialStep]);
+
   if (!isOpen) return null;
 
   const renderGraphic = () => (
