@@ -1,22 +1,41 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import TitleBar from './components/TitleBar';
 import Header from './components/Header';
 import ChatArea from './components/ChatArea';
 import InputBar from './components/InputBar';
-import { ChatState, Message, Role } from './types';
+import PeopleList from './components/PeopleList';
+import DirectChat from './components/DirectChat';
+import { ChatState, Message, Role, ViewState, Conversation } from './types';
 import { streamMessageFromGemini } from './services/geminiService';
 
+const MOCK_DIRECT_MESSAGES: Message[] = [
+  { id: 'm1', role: Role.MODEL, text: 'Este é o número do seu protocolo: 901080251', timestamp: Date.now() - 100000, senderName: 'Eduardo' },
+  { id: 'm2', role: Role.MODEL, text: 'Informe da Direção acerca da falta de energia em nosso Campus.', timestamp: Date.now() - 90000, senderName: 'Diretoria' },
+  { id: 'm3', role: Role.MODEL, text: 'To aqui aplicando prova 😢', timestamp: Date.now() - 80000, senderName: 'Junior <3' },
+  { id: 'm4', role: Role.MODEL, text: 'Ja tem 1h que acabou a luz', timestamp: Date.now() - 70000, senderName: 'Junior <3' },
+];
+
 const App: React.FC = () => {
+  const [currentView, setCurrentView] = useState<ViewState>('AI');
   const [selectedModel, setSelectedModel] = useState('Haiku 4.5');
-  const [chatState, setChatState] = useState<ChatState>({
+  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
+  
+  const [aiChatState, setAiChatState] = useState<ChatState>({
     messages: [],
     isTyping: false,
     error: null,
   });
 
+  const [directMessages, setDirectMessages] = useState<Message[]>(MOCK_DIRECT_MESSAGES);
+
   const handleNewChat = () => {
-    setChatState({ messages: [], isTyping: false, error: null });
+    setAiChatState({ messages: [], isTyping: false, error: null });
+  };
+
+  const handleSelectConversation = (conv: Conversation) => {
+    setActiveConversation(conv);
+    setCurrentView('DIRECT_CHAT');
   };
 
   const handleSendMessage = useCallback(async (text: string) => {
@@ -27,7 +46,12 @@ const App: React.FC = () => {
       timestamp: Date.now(),
     };
 
-    setChatState((prev) => ({
+    if (currentView === 'DIRECT_CHAT') {
+      setDirectMessages(prev => [...prev, userMsg]);
+      return;
+    }
+
+    setAiChatState((prev) => ({
       ...prev,
       messages: [...prev.messages, userMsg],
       isTyping: true,
@@ -38,7 +62,7 @@ const App: React.FC = () => {
     const aiMessageId = (Date.now() + 1).toString();
 
     try {
-      setChatState(prev => ({
+      setAiChatState(prev => ({
         ...prev,
         messages: [...prev.messages, {
           id: aiMessageId,
@@ -52,7 +76,7 @@ const App: React.FC = () => {
       
       for await (const chunk of stream) {
         aiResponseText += chunk;
-        setChatState(prev => ({
+        setAiChatState(prev => ({
           ...prev,
           isTyping: false,
           messages: prev.messages.map(m => 
@@ -61,42 +85,59 @@ const App: React.FC = () => {
         }));
       }
     } catch (err) {
-      setChatState((prev) => ({
+      setAiChatState((prev) => ({
         ...prev,
         isTyping: false,
         error: "Erro de conexão. Verifique sua chave de API.",
       }));
     }
-  }, []);
+  }, [currentView]);
 
   return (
     <div className="flex flex-col h-screen-ios bg-[#f9faf8]">
-      {/* Barra de Título conforme a imagem do usuário */}
       <TitleBar />
       
-      {/* Cabeçalho do Chat (Haiku 4.5 por padrão, mas dinâmico) */}
       <Header 
         onNewChat={handleNewChat} 
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        title={activeConversation?.name}
+        onBack={currentView === 'DIRECT_CHAT' ? () => setCurrentView('PEOPLE_LIST') : undefined}
       />
       
       <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
-        {chatState.error && (
+        {aiChatState.error && currentView === 'AI' && (
           <div className="absolute top-4 inset-x-4 bg-red-500 text-white px-4 py-2 rounded-xl text-center z-50 shadow-lg text-sm">
-            {chatState.error}
+            {aiChatState.error}
           </div>
         )}
 
-        <ChatArea 
-          messages={chatState.messages} 
-          isTyping={chatState.isTyping} 
-        />
+        {currentView === 'AI' && (
+          <ChatArea 
+            messages={aiChatState.messages} 
+            isTyping={aiChatState.isTyping} 
+          />
+        )}
+
+        {currentView === 'PEOPLE_LIST' && (
+          <PeopleList onSelectConversation={handleSelectConversation} />
+        )}
+
+        {currentView === 'DIRECT_CHAT' && activeConversation && (
+          <DirectChat 
+            conversation={activeConversation} 
+            messages={directMessages} 
+          />
+        )}
         
-        <InputBar 
-          onSendMessage={handleSendMessage} 
-          disabled={chatState.isTyping} 
-        />
+        {currentView !== 'PEOPLE_LIST' && (
+          <InputBar 
+            onSendMessage={handleSendMessage} 
+            disabled={aiChatState.isTyping} 
+          />
+        )}
       </div>
     </div>
   );

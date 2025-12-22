@@ -1,19 +1,31 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import ModelSelector from './ModelSelector';
+import { ViewState } from '../types';
 
 interface HeaderProps {
   onNewChat: () => void;
   selectedModel: string;
   onModelChange: (model: string) => void;
+  currentView: ViewState;
+  onViewChange: (view: ViewState) => void;
+  title?: string;
+  onBack?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNewChat, selectedModel, onModelChange }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  onNewChat, 
+  selectedModel, 
+  onModelChange, 
+  currentView, 
+  onViewChange,
+  title,
+  onBack
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fecha o menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -26,29 +38,63 @@ const Header: React.FC<HeaderProps> = ({ onNewChat, selectedModel, onModelChange
 
   return (
     <header className="relative shrink-0 bg-transparent px-6 py-4 flex items-center justify-between z-50">
-      <div className="flex flex-col">
-        <button 
-          onClick={() => setIsModelSelectorOpen(true)}
-          className="flex items-center gap-1 group"
-        >
-          <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight group-hover:text-slate-900 transition-colors">
-            {selectedModel}
-          </span>
-          <span className="material-symbols-outlined text-[#7b8a97] text-[18px] transition-transform group-hover:translate-y-0.5">
-            expand_more
-          </span>
-        </button>
+      <div className="flex items-center gap-2">
+        {onBack && (
+          <button onClick={onBack} className="mr-2 p-1 hover:bg-black/5 rounded-full">
+            <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+          </button>
+        )}
+        <div className="flex flex-col">
+          {currentView === 'AI' ? (
+            <button 
+              onClick={() => setIsModelSelectorOpen(true)}
+              className="flex items-center gap-1 group"
+            >
+              <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight group-hover:text-slate-900 transition-colors">
+                {selectedModel}
+              </span>
+              <span className="material-symbols-outlined text-[#7b8a97] text-[18px] transition-transform group-hover:translate-y-0.5">
+                expand_more
+              </span>
+            </button>
+          ) : (
+            <span className="text-[#1a1a1a] text-[20px] font-bold tracking-tight">
+              {title || (currentView === 'PEOPLE_LIST' ? 'Conversas' : 'Chat')}
+            </span>
+          )}
+        </div>
       </div>
       
-      <div className="flex items-center gap-4 text-[#7b8a97]">
-        <button 
-          onClick={onNewChat} 
-          className="p-1 hover:bg-black/5 rounded-full transition-colors"
-          title="Novo Chat"
-        >
-          <span className="material-symbols-outlined text-[22px]">add_comment</span>
-        </button>
+      <div className="flex items-center gap-3 text-[#7b8a97]">
+        {currentView === 'AI' && (
+          <>
+            <button 
+              onClick={() => onViewChange('PEOPLE_LIST')}
+              className="p-1.5 hover:bg-black/5 rounded-full transition-colors flex items-center justify-center"
+              title="Pessoas e Departamentos"
+            >
+              <span className="material-symbols-outlined text-[24px]">group</span>
+            </button>
+            <button 
+              onClick={onNewChat} 
+              className="p-1.5 hover:bg-black/5 rounded-full transition-colors"
+              title="Novo Chat"
+            >
+              <span className="material-symbols-outlined text-[22px]">add_comment</span>
+            </button>
+          </>
+        )}
         
+        {currentView === 'PEOPLE_LIST' && (
+           <button 
+            onClick={() => onViewChange('AI')}
+            className="p-1.5 hover:bg-black/5 rounded-full transition-colors flex items-center gap-2"
+            title="Voltar para IA"
+          >
+            <span className="material-symbols-outlined text-[24px]">auto_awesome</span>
+          </button>
+        )}
+
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -57,26 +103,21 @@ const Header: React.FC<HeaderProps> = ({ onNewChat, selectedModel, onModelChange
             <span className="material-symbols-outlined text-[22px]">more_vert</span>
           </button>
 
-          {/* Dropdown Menu conforme imagem */}
           {isMenuOpen && (
             <div className="absolute right-0 mt-2 w-64 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-1.5 animate-in fade-in zoom-in duration-200 origin-top-right">
-              
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left group">
+              <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left">
                 <span className="material-symbols-outlined text-[20px] text-[#6b7280]">schedule</span>
                 <span className="text-[15px] flex-1">Converter em tarefa</span>
               </button>
-
               <button className="w-full flex items-center gap-3 px-3 py-2.5 bg-[#f7f6f2] text-[#1a1a1a] rounded-xl transition-colors text-left">
                 <span className="material-symbols-outlined text-[20px]">settings</span>
                 <span className="text-[15px] font-medium flex-1">Configurações</span>
               </button>
-
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left group">
+              <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left">
                 <span className="material-symbols-outlined text-[20px] text-[#6b7280]">language</span>
                 <span className="text-[15px] flex-1">Idioma</span>
                 <span className="material-symbols-outlined text-[18px] text-[#9ca3af]">chevron_right</span>
               </button>
-
             </div>
           )}
         </div>

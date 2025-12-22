@@ -28,7 +28,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
     }
   };
 
-  // Fecha o dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -40,38 +39,55 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   }, []);
 
   return (
-    <footer className="shrink-0 px-4 pb-6 pt-2">
+    <footer className="shrink-0 px-4 pb-6 pt-2 z-40 bg-transparent">
       <div className="max-w-2xl mx-auto w-full flex flex-col gap-3">
-        <div className="bg-white border border-[#e5e7eb] rounded-[1.8rem] p-4 flex flex-col gap-3 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-          <input 
-            ref={inputRef}
-            className="w-full bg-transparent border-none text-[17px] text-[#2c3137] placeholder:text-[#9ca3af] px-2 py-1 focus:ring-0" 
-            placeholder="Digite / para comandos" 
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={disabled}
-          />
+        <div className="bg-white border border-[#e5e7eb] rounded-[1.8rem] p-4 flex flex-col gap-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[#7b8a97] cursor-pointer hover:text-slate-900">add</span>
+            <input 
+              ref={inputRef}
+              className="w-full bg-transparent border-none text-[17px] text-[#2c3137] placeholder:text-[#9ca3af] px-2 py-1 focus:ring-0" 
+              placeholder="Digite uma mensagem" 
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={disabled}
+            />
+            {input.trim() ? (
+               <button 
+                onClick={handleSend}
+                disabled={disabled}
+                className="size-10 rounded-full flex items-center justify-center transition-all bg-[#00a884] text-white"
+              >
+                <span className="material-symbols-outlined text-[24px] font-bold">send</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-3 text-[#7b8a97]">
+                <span className="material-symbols-outlined text-[24px] cursor-pointer hover:text-slate-900">camera_alt</span>
+                <span className="material-symbols-outlined text-[24px] cursor-pointer hover:text-slate-900">mic</span>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center justify-between border-t border-slate-50 pt-2">
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1 text-[14px] text-[#4b5a67] hover:bg-slate-50 rounded-full transition-colors"
+                className="flex items-center gap-2 px-3 py-1 text-[13px] text-[#4b5a67] hover:bg-slate-50 rounded-full transition-colors"
               >
-                <span className="material-symbols-outlined text-[20px]">
+                <span className="material-symbols-outlined text-[18px]">
                   {mode === 'conversar' ? 'pan_tool' : 'fast_forward'}
                 </span>
                 <span className="font-normal">
                   {mode === 'conversar' ? 'Modo conversar' : 'Modo executar ações'}
                 </span>
-                <span className={`material-symbols-outlined text-[18px] opacity-40 transition-transform ${isModeDropdownOpen ? 'rotate-180' : ''}`}>
+                <span className={`material-symbols-outlined text-[16px] opacity-40 transition-transform ${isModeDropdownOpen ? 'rotate-180' : ''}`}>
                   expand_more
                 </span>
               </button>
 
-              {/* Interaction Mode Dropdown */}
               {isModeDropdownOpen && (
                 <div className="absolute bottom-full left-0 mb-2 w-72 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <button 
@@ -108,20 +124,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
             <div className="flex items-center gap-2">
               <button className="p-2 text-[#7b8a97] hover:text-slate-600 transition-colors">
                 <span className="material-symbols-outlined text-[22px]">auto_awesome_motion</span>
-              </button>
-              <button className="p-2 text-[#7b8a97] hover:text-slate-600 transition-colors">
-                <span className="material-symbols-outlined text-[22px]">add</span>
-              </button>
-              <button 
-                onClick={handleSend}
-                disabled={!input.trim() || disabled}
-                className={`size-10 rounded-xl flex items-center justify-center transition-all ${
-                  input.trim() && !disabled 
-                    ? 'bg-[#eeb0a1] text-white' 
-                    : 'bg-[#f3f4f6] text-[#d1d5db]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[24px] font-bold">arrow_upward</span>
               </button>
             </div>
           </div>
