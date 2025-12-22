@@ -10,6 +10,19 @@ interface InputBarProps {
 
 type InteractionMode = 'conversar' | 'executar';
 
+interface Assistant {
+  id: string;
+  name: string;
+  command: string;
+  icon: string;
+}
+
+const MOCK_ASSISTANTS: Assistant[] = [
+  { id: '1', name: 'Assistente de Copywriter', command: '/copywriter', icon: 'edit_note' },
+  { id: '2', name: 'Assistente de Vendas', command: '/vendas', icon: 'trending_up' },
+  { id: '3', name: 'Assistente de Tradução', command: '/traducao', icon: 'translate' },
+];
+
 const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<InteractionMode>('conversar');
@@ -17,15 +30,18 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
   const [isWorkflowFlowOpen, setIsWorkflowFlowOpen] = useState(false);
+  const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
+  const commandMenuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (input.trim() && !disabled) {
       onSendMessage(input.trim());
       setInput('');
+      setIsCommandMenuOpen(false);
     }
   };
 
@@ -33,6 +49,27 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
     if (e.key === 'Enter') {
       handleSend();
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setInput(val);
+    
+    // Abre o menu de comandos se o usuário digitar '/' no início ou após um espaço
+    if (val.endsWith('/')) {
+      setIsCommandMenuOpen(true);
+    } else if (!val.includes('/')) {
+      setIsCommandMenuOpen(false);
+    }
+  };
+
+  const selectAssistant = (assistant: Assistant) => {
+    // Substitui o último '/' digitado pelo comando do assistente
+    const lastSlashIndex = input.lastIndexOf('/');
+    const newInput = input.substring(0, lastSlashIndex) + assistant.command + ' ';
+    setInput(newInput);
+    setIsCommandMenuOpen(false);
+    inputRef.current?.focus();
   };
 
   useEffect(() => {
@@ -44,14 +81,47 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
       if (addMenuRef.current && !addMenuRef.current.contains(target)) {
         setIsAddMenuOpen(false);
       }
+      if (commandMenuRef.current && !commandMenuRef.current.contains(target)) {
+        setIsCommandMenuOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <footer className="shrink-0 px-4 pb-6 pt-2 z-40 bg-transparent">
+    <footer className="shrink-0 px-4 pb-6 pt-2 z-40 bg-transparent relative">
       <div className="max-w-2xl mx-auto w-full flex flex-col gap-3">
+        
+        {/* Dropdown de Comandos '/' */}
+        {isCommandMenuOpen && (
+          <div 
+            ref={commandMenuRef}
+            className="absolute bottom-full left-4 right-4 mb-4 bg-white border border-[#e5e7eb] rounded-[1.5rem] shadow-[0_12px_40px_rgba(0,0,0,0.15)] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300 z-[60]"
+          >
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Assistentes de Trabalho</span>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto p-1.5">
+              {MOCK_ASSISTANTS.map((assistant) => (
+                <button
+                  key={assistant.id}
+                  onClick={() => selectAssistant(assistant)}
+                  className="w-full flex items-center gap-3 px-3 py-3 hover:bg-slate-50 rounded-xl transition-colors text-left group"
+                >
+                  <div className="size-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                    <span className="material-symbols-outlined text-[22px]">{assistant.icon}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[15px] font-semibold text-slate-800">{assistant.name}</span>
+                    <span className="text-[12px] text-slate-400">{assistant.command}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="bg-white border border-[#e5e7eb] rounded-[1.8rem] p-4 flex flex-col gap-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           
           <div className="flex items-center gap-2">
@@ -87,10 +157,10 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
             <input 
               ref={inputRef}
               className="w-full bg-transparent border-none text-[17px] text-[#2c3137] placeholder:text-[#9ca3af] px-2 py-1 focus:ring-0" 
-              placeholder="Digite uma mensagem" 
+              placeholder="Digite uma mensagem ou / para assistentes" 
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               disabled={disabled}
             />
@@ -167,7 +237,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
               >
                 <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  Criar fluxo de trabalho
+                  Criar assistente de trabalho
                 </div>
               </button>
 
