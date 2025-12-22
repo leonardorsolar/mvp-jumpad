@@ -8,6 +8,7 @@ import { ChatState, Message, Role } from './types';
 import { streamMessageFromGemini } from './services/geminiService';
 
 const App: React.FC = () => {
+  const [selectedModel, setSelectedModel] = useState('Haiku 4.5');
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isTyping: false,
@@ -73,8 +74,12 @@ const App: React.FC = () => {
       {/* Barra de Título conforme a imagem do usuário */}
       <TitleBar />
       
-      {/* Cabeçalho do Chat (Haiku 4.5) */}
-      <Header onNewChat={handleNewChat} />
+      {/* Cabeçalho do Chat (Haiku 4.5 por padrão, mas dinâmico) */}
+      <Header 
+        onNewChat={handleNewChat} 
+        selectedModel={selectedModel}
+        onModelChange={setSelectedModel}
+      />
       
       <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
         {chatState.error && (

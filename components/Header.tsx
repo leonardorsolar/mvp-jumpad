@@ -1,12 +1,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import ModelSelector from './ModelSelector';
 
 interface HeaderProps {
   onNewChat: () => void;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNewChat }) => {
+const Header: React.FC<HeaderProps> = ({ onNewChat, selectedModel, onModelChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModelSelectorOpen, setIsModelSelectorOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Fecha o menu ao clicar fora
@@ -23,7 +27,17 @@ const Header: React.FC<HeaderProps> = ({ onNewChat }) => {
   return (
     <header className="relative shrink-0 bg-transparent px-6 py-4 flex items-center justify-between z-50">
       <div className="flex flex-col">
-        <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight">Haiku 4.5</span>
+        <button 
+          onClick={() => setIsModelSelectorOpen(true)}
+          className="flex items-center gap-1 group"
+        >
+          <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight group-hover:text-slate-900 transition-colors">
+            {selectedModel}
+          </span>
+          <span className="material-symbols-outlined text-[#7b8a97] text-[18px] transition-transform group-hover:translate-y-0.5">
+            expand_more
+          </span>
+        </button>
       </div>
       
       <div className="flex items-center gap-4 text-[#7b8a97]">
@@ -67,6 +81,13 @@ const Header: React.FC<HeaderProps> = ({ onNewChat }) => {
           )}
         </div>
       </div>
+
+      <ModelSelector 
+        isOpen={isModelSelectorOpen}
+        onClose={() => setIsModelSelectorOpen(false)}
+        currentModel={selectedModel}
+        onSelectModel={onModelChange}
+      />
     </header>
   );
 };
