@@ -13,20 +13,20 @@ const MOCK_CONVERSATIONS: Conversation[] = [
     type: 'department'
   },
   {
-    id: 'dept-dev',
-    name: 'IA para Devs - Geral',
-    lastMessage: '~ William Menezes: vou testar... usei o 4.6 achei engasgado.. obrigado m...',
+    id: 'dept-marketing',
+    name: 'Marketing',
+    lastMessage: '~ William Menezes: O novo layout da campanha ficou excelente!',
     time: '18:01',
-    avatar: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&q=80&w=100&h=100',
+    avatar: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=100&h=100',
     unreadCount: 5,
     type: 'department'
   },
   {
-    id: 'p-miguel',
-    name: 'Família',
-    lastMessage: 'Miguel: 📷 Foto',
+    id: 'p-gleisson',
+    name: 'Gleisson',
+    lastMessage: 'Pode revisar o relatório de métricas?',
     time: '15:31',
-    avatar: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=100&h=100',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100&h=100',
     type: 'person'
   },
   {
@@ -38,11 +38,11 @@ const MOCK_CONVERSATIONS: Conversation[] = [
     type: 'person'
   },
   {
-    id: 'dept-itap',
-    name: 'Informes IFF Itaperuna',
-    lastMessage: '~ Juliana Ladeira: Bom dia! Informo que devido ao período de férias leti...',
+    id: 'dept-empresa',
+    name: 'Informes da Empresa',
+    lastMessage: '~ Diretoria: Comunicado oficial sobre o novo plano de benefícios.',
     time: '12:26',
-    avatar: 'https://images.unsplash.com/photo-1544640808-32ca72ac7f37?auto=format&fit=crop&q=80&w=100&h=100',
+    avatar: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=100&h=100',
     type: 'department'
   }
 ];
