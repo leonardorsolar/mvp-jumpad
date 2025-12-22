@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
+import VoiceModeOverlay from './VoiceModeOverlay';
 
 interface InputBarProps {
   onSendMessage: (text: string) => void;
@@ -13,6 +14,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [mode, setMode] = useState<InteractionMode>('conversar');
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
+  const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -59,7 +61,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
                 <span className="material-symbols-outlined text-[24px]">add</span>
               </button>
 
-              {/* Modal de Adicionar (Conforme Imagem) */}
               {isAddMenuOpen && (
                 <div className="absolute bottom-full left-0 mb-3 w-64 bg-white border border-[#e5e7eb] rounded-[1.2rem] shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-1.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-200">
                   <button 
@@ -158,8 +159,12 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
             </div>
             
             <div className="flex items-center gap-2">
-              <button className="p-2 text-[#7b8a97] hover:text-slate-600 transition-colors">
-                <span className="material-symbols-outlined text-[22px]">auto_awesome_motion</span>
+              <button 
+                onClick={() => setIsVoiceModeOpen(true)}
+                className="p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
+                title="Conversa por Voz"
+              >
+                <span className="material-symbols-outlined text-[24px]">equalizer</span>
               </button>
             </div>
           </div>
@@ -169,6 +174,11 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
           Jumpad é uma IA e pode cometer erros. Verifique as respostas.
         </p>
       </div>
+
+      <VoiceModeOverlay 
+        isOpen={isVoiceModeOpen} 
+        onClose={() => setIsVoiceModeOpen(false)} 
+      />
     </footer>
   );
 };
