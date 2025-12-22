@@ -38,67 +38,73 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="relative shrink-0 bg-transparent px-6 py-4 flex items-center justify-between z-50">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         {onBack && (
-          <button onClick={onBack} className="mr-2 p-1 hover:bg-black/5 rounded-full">
+          <button onClick={onBack} className="mr-2 p-1 hover:bg-black/5 rounded-full shrink-0 transition-colors">
             <span className="material-symbols-outlined text-[24px]">arrow_back</span>
           </button>
         )}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-w-0">
           {currentView === 'AI' ? (
             <button 
               onClick={() => setIsModelSelectorOpen(true)}
               className="flex items-center gap-1 group"
             >
-              <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight group-hover:text-slate-900 transition-colors">
+              <span className="text-[#4b5a67] text-[17px] font-medium tracking-tight group-hover:text-slate-900 transition-colors truncate">
                 {selectedModel}
               </span>
-              <span className="material-symbols-outlined text-[#7b8a97] text-[18px] transition-transform group-hover:translate-y-0.5">
+              <span className="material-symbols-outlined text-[#7b8a97] text-[18px] transition-transform group-hover:translate-y-0.5 shrink-0">
                 expand_more
               </span>
             </button>
           ) : (
-            <span className="text-[#1a1a1a] text-[20px] font-bold tracking-tight">
+            <span className="text-[#1a1a1a] text-[20px] font-bold tracking-tight truncate">
               {title || (currentView === 'PEOPLE_LIST' ? 'Conversas' : 'Chat')}
             </span>
           )}
         </div>
       </div>
       
-      <div className="flex items-center gap-3 text-[#7b8a97]">
-        {currentView === 'AI' && (
-          <>
-            <button 
-              onClick={() => onViewChange('PEOPLE_LIST')}
-              className="p-1.5 hover:bg-black/5 rounded-full transition-colors flex items-center justify-center"
-              title="Pessoas e Departamentos"
-            >
-              <span className="material-symbols-outlined text-[24px]">group</span>
-            </button>
-            <button 
-              onClick={onNewChat} 
-              className="p-1.5 hover:bg-black/5 rounded-full transition-colors"
-              title="Novo Chat"
-            >
-              <span className="material-symbols-outlined text-[22px]">add_comment</span>
-            </button>
-          </>
-        )}
-        
-        {currentView === 'PEOPLE_LIST' && (
-           <button 
-            onClick={() => onViewChange('AI')}
-            className="p-1.5 hover:bg-black/5 rounded-full transition-colors flex items-center gap-2"
-            title="Voltar para IA"
-          >
-            <span className="material-symbols-outlined text-[24px]">auto_awesome</span>
-          </button>
-        )}
+      {/* Menu de Ícones com Layout Estático (Não muda de estrutura) */}
+      <div className="flex items-center gap-3 text-[#7b8a97] shrink-0">
+        {/* Ícone 1: Pessoas / Departamentos (Ghost quando não está na IA) */}
+        <button 
+          onClick={() => {
+            if (currentView === 'AI') onViewChange('PEOPLE_LIST');
+          }}
+          disabled={currentView !== 'AI'}
+          className={`p-1.5 rounded-full transition-all flex items-center justify-center ${
+            currentView !== 'AI' 
+              ? 'opacity-20 cursor-default' 
+              : 'hover:bg-black/5 active:scale-90'
+          }`}
+          title="Pessoas e Departamentos"
+        >
+          <span className="material-symbols-outlined text-[24px]">group</span>
+        </button>
 
+        {/* Ícone 2: Novo Chat ou Voltar para IA (No mesmo slot central) */}
+        <button 
+          onClick={() => {
+            if (currentView === 'AI') {
+              onNewChat();
+            } else {
+              onViewChange('AI');
+            }
+          }} 
+          className="p-1.5 hover:bg-black/5 active:scale-90 rounded-full transition-all flex items-center justify-center"
+          title={currentView === 'AI' ? "Novo Chat" : "Voltar para IA"}
+        >
+          <span className="material-symbols-outlined text-[24px]">
+            {currentView === 'AI' ? 'add_comment' : 'chat'}
+          </span>
+        </button>
+
+        {/* Ícone 3: Menu de Mais Opções */}
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`p-1 rounded-full transition-colors ${isMenuOpen ? 'bg-black/5 text-slate-900' : 'hover:bg-black/5'}`}
+            className={`p-1 rounded-full transition-all active:scale-90 ${isMenuOpen ? 'bg-black/5 text-slate-900' : 'hover:bg-black/5'}`}
           >
             <span className="material-symbols-outlined text-[22px]">more_vert</span>
           </button>
