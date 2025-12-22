@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, KeyboardEvent, useEffect } from 'react';
 import VoiceModeOverlay from './VoiceModeOverlay';
+import WorkflowFlow from './WorkflowFlow';
 
 interface InputBarProps {
   onSendMessage: (text: string) => void;
@@ -15,6 +16,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
   const [isModeDropdownOpen, setIsModeDropdownOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isVoiceModeOpen, setIsVoiceModeOpen] = useState(false);
+  const [isWorkflowFlowOpen, setIsWorkflowFlowOpen] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
@@ -160,6 +162,16 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
             
             <div className="flex items-center gap-2">
               <button 
+                onClick={() => setIsWorkflowFlowOpen(true)}
+                className="group relative p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
+              >
+                <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Criar fluxo de trabalho
+                </div>
+              </button>
+
+              <button 
                 onClick={() => setIsVoiceModeOpen(true)}
                 className="p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
                 title="Conversa por Voz"
@@ -178,6 +190,11 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled }) => {
       <VoiceModeOverlay 
         isOpen={isVoiceModeOpen} 
         onClose={() => setIsVoiceModeOpen(false)} 
+      />
+
+      <WorkflowFlow
+        isOpen={isWorkflowFlowOpen}
+        onClose={() => setIsWorkflowFlowOpen(false)}
       />
     </footer>
   );

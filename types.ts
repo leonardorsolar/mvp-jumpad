@@ -20,7 +20,7 @@ export interface ChatState {
   error: string | null;
 }
 
-export type ViewState = 'AI' | 'PEOPLE_LIST' | 'DIRECT_CHAT';
+export type ViewState = 'AI' | 'PEOPLE_LIST' | 'DIRECT_CHAT' | 'WORKFLOW_FLOW';
 
 export interface Conversation {
   id: string;
@@ -32,3 +32,5 @@ export interface Conversation {
   type: 'department' | 'person';
   department?: string;
 }
+
+export type WorkflowStep = 'PERMISSION' | 'START' | 'RECORDING' | 'CREATE_MODAL';
