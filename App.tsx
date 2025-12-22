@@ -1,7 +1,6 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
-import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import InputBar from './components/InputBar';
 import { ChatState, Message, Role } from './types';
@@ -13,20 +12,9 @@ const App: React.FC = () => {
     isTyping: false,
     error: null,
   });
-  
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains('dark');
-  });
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
 
   const handleNewChat = () => {
     setChatState({ messages: [], isTyping: false, error: null });
-    if (window.innerWidth < 1024) setSidebarOpen(false);
   };
 
   const handleSendMessage = useCallback(async (text: string) => {
@@ -48,7 +36,6 @@ const App: React.FC = () => {
     const aiMessageId = (Date.now() + 1).toString();
 
     try {
-      // Initialize an empty AI message
       setChatState(prev => ({
         ...prev,
         messages: [...prev.messages, {
@@ -65,7 +52,7 @@ const App: React.FC = () => {
         aiResponseText += chunk;
         setChatState(prev => ({
           ...prev,
-          isTyping: false, // Turn off typing once streaming starts
+          isTyping: false,
           messages: prev.messages.map(m => 
             m.id === aiMessageId ? { ...m, text: aiResponseText } : m
           )
@@ -81,22 +68,12 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-        onNewChat={handleNewChat}
-      />
+    <div className="flex flex-col h-screen-ios bg-[#f9faf8]">
+      <Header onNewChat={handleNewChat} />
       
-      <div className="flex-1 flex flex-col min-w-0 relative">
-        <Header 
-          onToggleSidebar={() => setSidebarOpen(!isSidebarOpen)} 
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={toggleDarkMode}
-        />
-        
+      <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
         {chatState.error && (
-          <div className="absolute top-20 inset-x-0 mx-auto max-w-sm bg-red-500 text-white px-4 py-2 rounded-xl text-center z-50 shadow-lg animate-bounce">
+          <div className="absolute top-4 inset-x-4 bg-red-500 text-white px-4 py-2 rounded-xl text-center z-50 shadow-lg text-sm">
             {chatState.error}
           </div>
         )}

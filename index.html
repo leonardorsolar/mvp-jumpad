@@ -3,22 +3,19 @@
 <html lang="en" class="light">
 <head>
     <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Jumpad AI - Chat</title>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Jumpad AI</title>
     
-    <!-- Favicon para evitar erro 404 -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
-    <!-- Script do Tailwind primeiro -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     
     <script>
-        // Configuração segura do Tailwind
         function configureTailwind() {
             if (typeof tailwind !== 'undefined') {
                 tailwind.config = {
@@ -27,45 +24,32 @@
                         extend: {
                             colors: {
                                 "primary": "#a855f7",
-                                "primary-dark": "#9333ea",
-                                "background-light": "#ffffff", 
-                                "background-dark": "#0f0f10",
-                                "sidebar-light": "#f9f9fb",
-                                "sidebar-dark": "#161618",
+                                "background-app": "#f9faf8",
+                                "send-btn": "#eeb0a1",
+                                "input-border": "#e5e7eb",
                             },
                             fontFamily: {
-                                "display": ["Space Grotesk", "sans-serif"]
+                                "sans": ["Inter", "sans-serif"]
                             },
                             borderRadius: {
-                                "DEFAULT": "0.75rem",
-                                "lg": "1rem",
-                                "xl": "1.5rem",
-                                "full": "9999px"
+                                "input": "1.5rem",
                             },
                         },
                     },
                 };
-            } else {
-                console.error("Tailwind CDN falhou ao carregar. Verifique sua conexão.");
             }
         }
         configureTailwind();
     </script>
     
     <style>
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.2); border-radius: 10px; }
+        body { margin: 0; padding: 0; overflow: hidden; height: 100vh; background-color: #f9faf8; }
+        #root { height: 100vh; display: flex; flex-direction: column; }
+        .prose p { margin-bottom: 0.5rem; }
+        input:focus { outline: none; box-shadow: none; }
         
-        body { margin: 0; padding: 0; overflow: hidden; height: 100vh; }
-        #root { height: 100vh; display: flex; flex-direction: row; }
-
-        /* Estilos básicos de fallback caso o tailwind falhe */
-        .prose pre { background: #1e1e1e; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.5rem 0; color: white; }
-        .prose code { font-family: monospace; background: rgba(0,0,0,0.05); padding: 0.2rem 0.4rem; border-radius: 0.25rem; }
-        .dark .prose code { background: rgba(255,255,255,0.1); }
-        .prose p { margin-bottom: 0.75rem; }
-        .prose ul, .prose ol { margin-left: 1.5rem; margin-bottom: 0.75rem; list-style-type: disc; }
+        /* Ajuste para mobile vh */
+        .h-screen-ios { height: 100dvh; }
     </style>
 
 <script type="importmap">
@@ -80,9 +64,8 @@
 }
 </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased transition-colors duration-300">
+<body class="bg-background-app font-sans text-slate-700 antialiased">
     <div id="root"></div>
-    <!-- Script principal como módulo para garantir carregamento após o DOM -->
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>
