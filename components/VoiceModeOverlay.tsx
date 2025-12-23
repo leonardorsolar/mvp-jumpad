@@ -10,6 +10,7 @@ interface VoiceModeOverlayProps {
 const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) => {
   const [transcription, setTranscription] = useState('Como posso te ajudar hoje?');
   const [isConnecting, setIsConnecting] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const nextStartTimeRef = useRef<number>(0);
@@ -47,17 +48,28 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
   useEffect(() => {
     if (!isOpen) return;
 
+    setError(null);
+    setIsConnecting(true);
     let stream: MediaStream | null = null;
     let processor: ScriptProcessorNode | null = null;
 
     const startSession = async () => {
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) {
+          throw new Error("Chave API não configurada.");
+        }
+
+        const ai = new GoogleGenAI({ apiKey });
         const inputCtx = new AudioContext({ sampleRate: 16000 });
         const outputCtx = new AudioContext({ sampleRate: 24000 });
         audioContextRef.current = outputCtx;
 
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+          throw new Error("Microfone não acessível. Verifique as permissões.");
+        }
         
         const sessionPromise = ai.live.connect({
           model: 'gemini-2.5-flash-native-audio-preview-09-2025',
@@ -113,20 +125,28 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
               }
 
               if (message.serverContent?.interrupted) {
-                sourcesRef.current.forEach(s => s.stop());
+                sourcesRef.current.forEach(s => {
+                  try { s.stop(); } catch(e) {}
+                });
                 sourcesRef.current.clear();
                 nextStartTimeRef.current = 0;
               }
             },
-            onclose: () => onClose(),
-            onerror: (e) => console.error('Live API Error:', e)
+            onclose: () => {
+              if (isOpen) setError("Conexão encerrada.");
+            },
+            onerror: (e) => {
+              console.error('Live API Error:', e);
+              setError("Erro de comunicação com o servidor.");
+            }
           }
         });
 
         sessionRef.current = await sessionPromise;
-      } catch (err) {
+      } catch (err: any) {
         console.error('Falha ao iniciar modo voz:', err);
-        onClose();
+        setError(err.message || "Falha ao iniciar modo voz.");
+        setIsConnecting(false);
       }
     };
 
@@ -135,7 +155,9 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
     return () => {
       stream?.getTracks().forEach(t => t.stop());
       processor?.disconnect();
-      sourcesRef.current.forEach(s => s.stop());
+      sourcesRef.current.forEach(s => {
+        try { s.stop(); } catch(e) {}
+      });
       if (sessionRef.current) sessionRef.current.close();
     };
   }, [isOpen]);
@@ -143,7 +165,7 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] bg-white flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-0 z-[9999] bg-white flex flex-col animate-in fade-in slide-in-from-bottom duration-300">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center gap-1">
@@ -160,15 +182,32 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
 
       {/* Info Banner */}
       <div className="flex items-center justify-center py-2 gap-2 text-slate-400 text-[13px]">
-        <span>Memórias salvas cheias</span>
-        <span className="material-symbols-outlined text-[16px]">info</span>
+        {error ? (
+          <span className="text-red-500 font-medium">{error}</span>
+        ) : (
+          <>
+            <span>Memórias salvas cheias</span>
+            <span className="material-symbols-outlined text-[16px]">info</span>
+          </>
+        )}
       </div>
 
       {/* Content Area */}
       <div className="flex-1 flex flex-col items-center justify-center px-10 text-center">
-        <p className="text-[24px] font-medium leading-tight text-slate-800 transition-all duration-500">
-          {isConnecting ? 'Conectando...' : transcription}
-        </p>
+        {isConnecting ? (
+          <div className="flex flex-col items-center gap-4">
+             <div className="flex gap-1 h-8 items-end">
+                <div className="w-1.5 bg-slate-200 rounded-full animate-bounce h-4"></div>
+                <div className="w-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.1s] h-6"></div>
+                <div className="w-1.5 bg-slate-200 rounded-full animate-bounce [animation-delay:0.2s] h-5"></div>
+             </div>
+             <p className="text-[20px] font-medium text-slate-400">Conectando...</p>
+          </div>
+        ) : (
+          <p className="text-[24px] font-medium leading-tight text-slate-800 transition-all duration-500">
+            {transcription}
+          </p>
+        )}
       </div>
 
       {/* Bottom Controls */}
@@ -188,7 +227,7 @@ const VoiceModeOverlay: React.FC<VoiceModeOverlayProps> = ({ isOpen, onClose }) 
         </button>
 
         <div className="size-12 rounded-full border border-slate-200 flex items-center justify-center text-slate-400">
-          <span className="material-symbols-outlined animate-pulse">mic</span>
+          <span className={`material-symbols-outlined ${!isConnecting && !error ? 'animate-pulse text-blue-500' : ''}`}>mic</span>
         </div>
 
         <button 

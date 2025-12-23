@@ -38,6 +38,13 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
   const workflowMenuRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const closeAllMenus = () => {
+    setIsWorkflowMenuOpen(false);
+    setIsCommandMenuOpen(false);
+    setIsAddMenuOpen(false);
+    setIsModeDropdownOpen(false);
+  };
+
   const handleSend = () => {
     if (input.trim() && !disabled) {
       onSendMessage(input.trim());
@@ -72,13 +79,13 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
   };
 
   const triggerWorkflow = (step: WorkflowStep) => {
-    // FECHA TODOS OS MENUS LOCAIS
-    setIsWorkflowMenuOpen(false);
-    setIsCommandMenuOpen(false);
-    setIsAddMenuOpen(false);
-    setIsModeDropdownOpen(false);
-    
+    closeAllMenus();
     onOpenWorkflow(step);
+  };
+
+  const triggerVoice = () => {
+    closeAllMenus();
+    onOpenVoice();
   };
 
   useEffect(() => {
@@ -139,7 +146,11 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
           <div className="flex items-center gap-2">
             <div className="relative" ref={addMenuRef}>
               <button 
-                onClick={() => setIsAddMenuOpen(!isAddMenuOpen)}
+                onClick={() => {
+                  const newState = !isAddMenuOpen;
+                  closeAllMenus();
+                  setIsAddMenuOpen(newState);
+                }}
                 className="flex items-center justify-center p-1 text-[#7b8a97] hover:text-slate-900 transition-colors"
               >
                 <span className="material-symbols-outlined text-[24px]">add</span>
@@ -195,7 +206,11 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
           <div className="flex items-center justify-between border-t border-slate-50 pt-2">
             <div className="relative" ref={dropdownRef}>
               <button 
-                onClick={() => setIsModeDropdownOpen(!isModeDropdownOpen)}
+                onClick={() => {
+                  const newState = !isModeDropdownOpen;
+                  closeAllMenus();
+                  setIsModeDropdownOpen(newState);
+                }}
                 className="flex items-center gap-2 px-3 py-1 text-[13px] text-[#4b5a67] hover:bg-slate-50 rounded-full transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">
@@ -245,7 +260,11 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
             <div className="flex items-center gap-2">
               <div className="relative" ref={workflowMenuRef}>
                 <button 
-                  onClick={() => setIsWorkflowMenuOpen(!isWorkflowMenuOpen)}
+                  onClick={() => {
+                    const newState = !isWorkflowMenuOpen;
+                    closeAllMenus();
+                    setIsWorkflowMenuOpen(newState);
+                  }}
                   className="group relative p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
                 >
                   <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
@@ -278,7 +297,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
               </div>
 
               <button 
-                onClick={onOpenVoice}
+                onClick={triggerVoice}
                 className="p-2 text-[#7b8a97] hover:text-[#007aff] transition-colors"
                 title="Conversa por Voz"
               >
