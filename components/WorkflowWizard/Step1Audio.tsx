@@ -13,7 +13,10 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
   const [taskInput, setTaskInput] = useState('');
   const [tasks, setTasks] = useState<TaskStep[]>([
     { id: '1', title: 'Ler e-mails novos do suporte', isRecorded: false, transcription: '' },
-    { id: '2', title: 'Classificar assunto (troca, atraso, reembolso)', isRecorded: false, transcription: '' }
+    { id: '2', title: 'Classificar assunto (troca, atraso, reembolso, boleto, cadastro)', isRecorded: false, transcription: '' },
+    { id: '3', title: 'Buscar pedido no sistema', isRecorded: false, transcription: '' },
+    { id: '4', title: 'Responder com modelo padrão', isRecorded: false, transcription: '' },
+    { id: '5', title: 'Escalar casos fora do padrão', isRecorded: false, transcription: '' }
   ]);
   const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -42,7 +45,7 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
     setTimeout(() => {
       setTasks(prev => prev.map(t => 
         t.id === taskId 
-          ? { ...t, isRecorded: true, transcription: 'Eu abro o Outlook e vejo o que chegou de novo na inbox principal do suporte...' } 
+          ? { ...t, isRecorded: true, transcription: 'Eu abro a caixa de entrada do suporte e vejo as mensagens pendentes...' } 
           : t
       ));
       setIsRecording(false);
@@ -56,7 +59,7 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
       {phase === 'mapping' ? (
         <div className="space-y-8">
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-[12px] font-bold text-slate-500 mb-2">
+            <div className="inline-flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full text-[12px] font-bold text-blue-600 mb-2">
               <span className="material-symbols-outlined text-[16px]">store</span>
               EXEMPLO: SUPORTE LOJAX
             </div>
@@ -70,7 +73,7 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
               value={taskInput}
               onChange={(e) => setTaskInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ex: Buscar pedido no sistema, Responder com modelo padrão..."
+              placeholder="Adicione outra tarefa..."
               className="flex-1 bg-transparent border-none px-4 py-2 focus:ring-0 text-[16px]"
             />
             <button 
@@ -86,7 +89,9 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
               {tasks.map((task, idx) => (
                 <div key={task.id} className="group flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-slate-200 transition-all">
                   <div className="flex items-center gap-4">
-                    <span className="text-[14px] font-bold text-slate-300">#{idx + 1}</span>
+                    <div className="size-8 rounded-lg bg-slate-50 flex items-center justify-center text-[12px] font-bold text-slate-400">
+                      {idx + 1}
+                    </div>
                     <span className="font-semibold text-slate-700">{task.title}</span>
                   </div>
                   <button 
@@ -120,7 +125,7 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
             </button>
             <div>
               <h2 className="text-[20px] font-bold text-slate-900">Entrevista da LojaX</h2>
-              <p className="text-slate-500 text-[14px]">Fale como você executa cada etapa abaixo.</p>
+              <p className="text-slate-500 text-[14px]">Clique em cada tarefa para detalhar como ela é feita.</p>
             </div>
           </div>
 
@@ -132,8 +137,8 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
                   activeTaskId === task.id 
                     ? 'border-blue-500 bg-blue-50/30 ring-4 ring-blue-50' 
                     : task.isRecorded 
-                      ? 'border-green-100 bg-white' 
-                      : 'border-slate-100 bg-white'
+                      ? 'border-green-100 bg-white shadow-sm' 
+                      : 'border-slate-100 bg-white hover:border-slate-200'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -164,7 +169,7 @@ const WorkflowStep1Audio: React.FC<{ onNext: () => void }> = ({ onNext }) => {
                   {activeTaskId === task.id && isRecording && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-red-100 text-red-600 rounded-full animate-pulse">
                       <div className="size-2 bg-red-600 rounded-full" />
-                      <span className="text-[11px] font-bold">OUVINDO...</span>
+                      <span className="text-[11px] font-bold uppercase">Ouvindo...</span>
                     </div>
                   )}
                 </div>

@@ -3,9 +3,30 @@ import React, { useState } from 'react';
 import { WorkflowEntry } from '../../types';
 
 const MOCK_WORKFLOWS: WorkflowEntry[] = [
-  { id: '1', title: 'Onboarding de Clientes - Financeiro', status: 'aprovado', date: '21 Mar 2024', step: 3 },
-  { id: '2', title: 'Aprovação de Crédito Imobiliário', status: 'em_revisao', date: 'Hoje', step: 2 },
-  { id: '3', title: 'Relatório Mensal de Performance', status: 'rascunho', date: 'Ontem', step: 1 },
+  { 
+    id: '1', 
+    title: 'Triagem e Resposta de E-mails', 
+    category: 'Atendimento',
+    status: 'aprovado', 
+    date: '21 Mar 2024', 
+    step: 3 
+  },
+  { 
+    id: '2', 
+    title: 'Reembolsos e Estornos', 
+    category: 'Financeiro',
+    status: 'em_revisao', 
+    date: 'Hoje', 
+    step: 2 
+  },
+  { 
+    id: '3', 
+    title: 'Atualização de Status de Pedido', 
+    category: 'Operações',
+    status: 'rascunho', 
+    date: 'Ontem', 
+    step: 1 
+  },
 ];
 
 interface WorkflowDashboardProps {
@@ -27,11 +48,16 @@ const WorkflowDashboard: React.FC<WorkflowDashboardProps> = ({ onCreateNew }) =>
       rascunho: 'Rascunho',
     };
     return (
-      <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider border ${styles[status]}`}>
+      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${styles[status]}`}>
         {labels[status]}
       </span>
     );
   };
+
+  const filteredFlows = MOCK_WORKFLOWS.filter(flow => 
+    flow.title.toLowerCase().includes(search.toLowerCase()) || 
+    flow.category.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="flex-1 flex flex-col bg-white overflow-hidden p-6 gap-8">
@@ -42,49 +68,67 @@ const WorkflowDashboard: React.FC<WorkflowDashboardProps> = ({ onCreateNew }) =>
         </div>
         <button 
           onClick={onCreateNew}
-          className="bg-[#1a1a1a] text-white px-5 py-2.5 rounded-2xl font-bold text-[15px] flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-black/5"
+          className="bg-[#1a1a1a] text-white px-5 py-2.5 rounded-2xl font-bold text-[15px] flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-black/5 active:scale-95"
         >
           <span className="material-symbols-outlined text-[20px]">add</span>
-          Criar meu fluxo
+          Criar novo fluxo
         </button>
       </div>
 
-      <div className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3">
+      <div className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
         <span className="material-symbols-outlined text-slate-400">search</span>
         <input 
           type="text" 
-          placeholder="Buscar processos..." 
-          className="bg-transparent border-none p-0 focus:ring-0 w-full text-[15px]"
+          placeholder="Buscar processos… (ex.: “e-mail”, “atendimento”, “reembolso”)" 
+          className="bg-transparent border-none p-0 focus:ring-0 w-full text-[15px] text-slate-700 placeholder:text-slate-400"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <div className="grid gap-3">
-        {MOCK_WORKFLOWS.map((flow) => (
-          <div 
-            key={flow.id}
-            className="group p-4 border border-slate-100 rounded-[1.5rem] hover:border-slate-200 hover:shadow-sm transition-all flex items-center justify-between cursor-pointer"
-          >
-            <div className="flex items-center gap-4">
-              <div className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                <span className="material-symbols-outlined text-[26px]">
-                  {flow.status === 'aprovado' ? 'verified' : 'history_edu'}
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-slate-800 text-[16px]">{flow.title}</span>
-                  {getStatusBadge(flow.status)}
-                </div>
-                <span className="text-slate-400 text-[13px]">Atualizado em {flow.date} • Passo {flow.step}/3</span>
-              </div>
-            </div>
-            <span className="material-symbols-outlined text-slate-300 group-hover:text-slate-500 group-hover:translate-x-1 transition-all">
-              chevron_right
-            </span>
+      <div className="flex-1 flex flex-col gap-3">
+        {filteredFlows.length === 0 ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-2">
+            <span className="material-symbols-outlined text-[48px]">search_off</span>
+            <p>Nenhum processo encontrado.</p>
           </div>
-        ))}
+        ) : (
+          filteredFlows.map((flow) => (
+            <div 
+              key={flow.id}
+              className="group p-4 border border-slate-100 rounded-[1.5rem] hover:border-blue-100 hover:shadow-md hover:shadow-blue-500/5 transition-all flex items-center justify-between cursor-pointer bg-white"
+            >
+              <div className="flex items-center gap-4">
+                <div className="size-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                  <span className="material-symbols-outlined text-[26px]">
+                    {flow.status === 'aprovado' ? 'verified' : 'history_edu'}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold text-slate-800 text-[16px] group-hover:text-blue-600 transition-colors">
+                      {flow.title} — <span className="text-slate-400 font-medium">{flow.category}</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {getStatusBadge(flow.status)}
+                    <span className="text-slate-400 text-[12px]">Atualizado {flow.date === 'Hoje' || flow.date === 'Ontem' ? flow.date.toLowerCase() : `em ${flow.date}`} • Passo {flow.step}/3</span>
+                  </div>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all">
+                chevron_right
+              </span>
+            </div>
+          ))
+        )}
+        
+        <div className="mt-4 px-2">
+           <p className="text-[12px] text-slate-400 flex items-center gap-2 italic">
+             <span className="material-symbols-outlined text-[16px]">lightbulb</span>
+             Dica: comece por um processo repetitivo (e-mails, relatórios, conciliação)
+           </p>
+        </div>
       </div>
     </div>
   );

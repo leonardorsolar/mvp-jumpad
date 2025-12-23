@@ -38,6 +38,7 @@ export type WorkflowStep = 'PERMISSION' | 'START' | 'RECORDING' | 'CREATE_MODAL'
 export interface WorkflowEntry {
   id: string;
   title: string;
+  category: string;
   status: 'rascunho' | 'em_revisao' | 'aprovado';
   date: string;
   step: number;
