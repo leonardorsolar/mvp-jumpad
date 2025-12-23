@@ -8,6 +8,8 @@ import PeopleList from './components/PeopleList';
 import DirectChat from './components/DirectChat';
 import VoiceModeOverlay from './components/VoiceModeOverlay';
 import WorkflowFlow from './components/WorkflowFlow';
+import WorkflowDashboard from './components/WorkflowWizard/WorkflowDashboard';
+import WorkflowWizardContainer from './components/WorkflowWizard/WorkflowWizardContainer';
 import { ChatState, Message, Role, ViewState, Conversation, WorkflowStep } from './types';
 import { streamMessageFromGemini } from './services/geminiService';
 
@@ -116,7 +118,13 @@ const App: React.FC = () => {
         currentView={currentView}
         onViewChange={setCurrentView}
         title={activeConversation?.name}
-        onBack={currentView === 'DIRECT_CHAT' ? () => setCurrentView('PEOPLE_LIST') : undefined}
+        onBack={
+          currentView === 'DIRECT_CHAT' 
+            ? () => setCurrentView('PEOPLE_LIST') 
+            : currentView === 'WORKFLOW_WIZARD' 
+              ? () => setCurrentView('WORKFLOW_DASHBOARD')
+              : undefined
+        }
       />
       
       <div className="flex-1 flex flex-col min-w-0 relative overflow-hidden">
@@ -143,8 +151,16 @@ const App: React.FC = () => {
             messages={directMessages} 
           />
         )}
+
+        {currentView === 'WORKFLOW_DASHBOARD' && (
+          <WorkflowDashboard onCreateNew={() => setCurrentView('WORKFLOW_WIZARD')} />
+        )}
+
+        {currentView === 'WORKFLOW_WIZARD' && (
+          <WorkflowWizardContainer onFinish={() => setCurrentView('WORKFLOW_DASHBOARD')} />
+        )}
         
-        {currentView !== 'PEOPLE_LIST' && (
+        {['AI', 'DIRECT_CHAT'].includes(currentView) && (
           <InputBar 
             onSendMessage={handleSendMessage} 
             disabled={aiChatState.isTyping} 
@@ -154,7 +170,7 @@ const App: React.FC = () => {
         )}
       </div>
 
-      {/* Renderização dos Overlays no nível raiz */}
+      {/* Renderização dos Overlays */}
       <VoiceModeOverlay 
         isOpen={isVoiceModeOpen} 
         onClose={() => setIsVoiceModeOpen(false)} 
