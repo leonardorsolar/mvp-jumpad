@@ -210,7 +210,6 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
               />
-              {/* Overlay invisível apenas para garantir que a classe 'placeholder:text' não conflite com nossa animação manual de opacidade se quisermos algo mais complexo no futuro */}
             </div>
 
             {input.trim() ? (
@@ -242,7 +241,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
                   {mode === 'conversar' ? 'pan_tool' : 'fast_forward'}
                 </span>
                 <span className="font-normal">
-                  {mode === 'conversar' ? 'Modo conversar' : 'Modo executar ações'}
+                  {mode === 'conversar' ? 'Modo conversar' : 'Modo executar tarefas'}
                 </span>
                 <span className={`material-symbols-outlined text-[16px] opacity-40 transition-transform ${isModeDropdownOpen ? 'rotate-180' : ''}`}>
                   expand_more
@@ -272,10 +271,10 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
                     <span className="material-symbols-outlined text-[20px] text-[#4b5a67] mt-0.5">fast_forward</span>
                     <div className="flex-1 flex flex-col">
                       <div className="flex items-center justify-between">
-                        <span className="text-[15px] font-medium text-[#1a1a1a]">Modo executar ações</span>
+                        <span className="text-[15px] font-medium text-[#1a1a1a]">Modo executar tarefas</span>
                         {mode === 'executar' && <span className="material-symbols-outlined text-[18px] text-[#2563eb]">check</span>}
                       </div>
-                      <span className="text-[13px] text-[#6b7280] leading-tight mt-0.5">Jumpad executa ações sem pedir permissão</span>
+                      <span className="text-[13px] text-[#6b7280] leading-tight mt-0.5">Jumpad executa tarefas sem pedir permissão</span>
                     </div>
                   </button>
                 </div>
