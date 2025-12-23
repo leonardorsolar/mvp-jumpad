@@ -65,25 +65,10 @@ const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
       
-      {/* Menu de Ícones com Layout Estático (Não muda de estrutura) */}
-      <div className="flex items-center gap-3 text-[#7b8a97] shrink-0">
-        {/* Ícone 1: Pessoas / Departamentos (Ghost quando não está na IA) */}
-        <button 
-          onClick={() => {
-            if (currentView === 'AI') onViewChange('PEOPLE_LIST');
-          }}
-          disabled={currentView !== 'AI'}
-          className={`p-1.5 rounded-full transition-all flex items-center justify-center ${
-            currentView !== 'AI' 
-              ? 'opacity-20 cursor-default' 
-              : 'hover:bg-black/5 active:scale-90'
-          }`}
-          title="Pessoas e Departamentos"
-        >
-          <span className="material-symbols-outlined text-[24px]">group</span>
-        </button>
-
-        {/* Ícone 2: Novo Chat ou Voltar para IA (No mesmo slot central) */}
+      {/* Menu de Ícones Reorganizado */}
+      <div className="flex items-center gap-2 text-[#7b8a97] shrink-0">
+        
+        {/* Ícone 1: Novo Chat ou Voltar para IA (Agora à Esquerda do grupo) */}
         <button 
           onClick={() => {
             if (currentView === 'AI') {
@@ -100,21 +85,41 @@ const Header: React.FC<HeaderProps> = ({
           </span>
         </button>
 
-        {/* Ícone 3: Menu de Mais Opções */}
+        {/* Ícone 2: Pessoas / Departamentos */}
+        <button 
+          onClick={() => {
+            if (currentView === 'AI') onViewChange('PEOPLE_LIST');
+          }}
+          disabled={currentView !== 'AI'}
+          className={`p-1.5 rounded-full transition-all flex items-center justify-center ${
+            currentView !== 'AI' 
+              ? 'opacity-20 cursor-default' 
+              : 'hover:bg-black/5 active:scale-90'
+          }`}
+          title="Pessoas e Departamentos"
+        >
+          <span className="material-symbols-outlined text-[24px]">group</span>
+        </button>
+
+        {/* Ícone 3: Meet Track (Gravação em Vídeo) - NOVO */}
+        <button 
+          className="p-1.5 hover:bg-black/5 active:scale-90 rounded-full transition-all flex items-center justify-center"
+          title="Meet Track - Gravação em Vídeo"
+        >
+          <span className="material-symbols-outlined text-[24px]">videocam</span>
+        </button>
+
+        {/* Ícone 4: Menu de Mais Opções */}
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`p-1 rounded-full transition-all active:scale-90 ${isMenuOpen ? 'bg-black/5 text-slate-900' : 'hover:bg-black/5'}`}
+            className={`p-1.5 rounded-full transition-all active:scale-90 ${isMenuOpen ? 'bg-black/5 text-slate-900' : 'hover:bg-black/5'}`}
           >
-            <span className="material-symbols-outlined text-[22px]">more_vert</span>
+            <span className="material-symbols-outlined text-[24px]">more_vert</span>
           </button>
 
           {isMenuOpen && (
             <div className="absolute right-0 mt-2 w-64 bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-1.5 animate-in fade-in zoom-in duration-200 origin-top-right">
-              <button className="w-full flex items-center gap-3 px-3 py-2.5 text-[#374151] hover:bg-slate-50 rounded-xl transition-colors text-left">
-                <span className="material-symbols-outlined text-[20px] text-[#6b7280]">schedule</span>
-                <span className="text-[15px] flex-1">Converter em tarefa</span>
-              </button>
               <button className="w-full flex items-center gap-3 px-3 py-2.5 bg-[#f7f6f2] text-[#1a1a1a] rounded-xl transition-colors text-left">
                 <span className="material-symbols-outlined text-[20px]">settings</span>
                 <span className="text-[15px] font-medium flex-1">Configurações</span>
@@ -133,6 +138,7 @@ const Header: React.FC<HeaderProps> = ({
         isOpen={isModelSelectorOpen}
         onClose={() => setIsModelSelectorOpen(false)}
         currentModel={selectedModel}
+        // Use onModelChange from props instead of the missing onSelectModel
         onSelectModel={onModelChange}
       />
     </header>
