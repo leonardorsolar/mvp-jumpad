@@ -24,6 +24,11 @@ const MOCK_ASSISTANTS: Assistant[] = [
   { id: '3', name: 'Assistente de Tradução', command: '/traducao', icon: 'translate' },
 ];
 
+const PLACEHOLDER_MESSAGES = [
+  "Como posso ajudar você?",
+  "digite / para executar seus assistentes"
+];
+
 const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoice, onOpenWorkflow }) => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<InteractionMode>('conversar');
@@ -32,6 +37,10 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
   const [isWorkflowMenuOpen, setIsWorkflowMenuOpen] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
   
+  // Estados para animação do placeholder
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isPlaceholderFading, setIsPlaceholderFading] = useState(false);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
   const commandMenuRef = useRef<HTMLDivElement>(null);
@@ -88,6 +97,19 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
     onOpenVoice();
   };
 
+  // Efeito para alternar o placeholder com animação
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsPlaceholderFading(true);
+      setTimeout(() => {
+        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_MESSAGES.length);
+        setIsPlaceholderFading(false);
+      }, 500); // Tempo para o fade-out completar
+    }, 4000); // Troca a cada 4 segundos
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
@@ -143,7 +165,7 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
 
         <div className="bg-white border border-[#e5e7eb] rounded-[1.8rem] p-4 flex flex-col gap-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative">
             <div className="relative" ref={addMenuRef}>
               <button 
                 onClick={() => {
@@ -177,16 +199,19 @@ const InputBar: React.FC<InputBarProps> = ({ onSendMessage, disabled, onOpenVoic
               )}
             </div>
 
-            <input 
-              ref={inputRef}
-              className="w-full bg-transparent border-none text-[17px] text-[#2c3137] placeholder:text-[#9ca3af] px-2 py-1 focus:ring-0" 
-              placeholder="Digite uma mensagem ou / para assistentes" 
-              type="text"
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              disabled={disabled}
-            />
+            <div className="relative flex-1 flex items-center">
+              <input 
+                ref={inputRef}
+                className={`w-full bg-transparent border-none text-[17px] text-[#2c3137] px-2 py-1 focus:ring-0 transition-opacity duration-300 ${isPlaceholderFading && !input ? 'opacity-50' : 'opacity-100'}`} 
+                placeholder={PLACEHOLDER_MESSAGES[placeholderIndex]} 
+                type="text"
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                disabled={disabled}
+              />
+              {/* Overlay invisível apenas para garantir que a classe 'placeholder:text' não conflite com nossa animação manual de opacidade se quisermos algo mais complexo no futuro */}
+            </div>
 
             {input.trim() ? (
                <button 
